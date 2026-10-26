@@ -1,52 +1,85 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="mb-4">Список завдань</h1>
-
-<form method="POST" action="{{ url_for('store') }}" class="mb-4">
-    <div class="input-group">
-        <input type="text" name="description" class="form-control" placeholder="Нове завдання..." required autofocus>
-        <button class="btn btn-primary" type="submit">Додати</button>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold">КАТАЛОГ ВЗУТТЯ</h1>
+        <p class="text-muted">Знайди свою ідеальну пару</p>
     </div>
-</form>
+    <span class="badge bg-dark fs-6">SHOES STORE</span>
+</div>
 
-{% if tasks %}
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Статус</th>
-            <th>Опис</th>
-            <th>Дії</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for task in tasks %}
-        <tr>
-            <td>{{ task.id }}</td>
-            <td>
-                {% if task.done %}
-                <span class="badge bg-success">✓</span>
-                {% else %}
-                <span class="badge bg-secondary">—</span>
-                {% endif %}
-            </td>
-            <td class="{% if task.done %}done{% endif %}">{{ task.description }}</td>
-            <td>
-                {% if not task.done %}
-                <form method="POST" action="{{ url_for('mark_done', task_id=task.id) }}" class="d-inline">
-                    <button type="submit" class="btn btn-sm btn-outline-success">Виконано</button>
-                </form>
-                {% endif %}
-                <form method="POST" action="{{ url_for('delete', task_id=task.id) }}" class="d-inline">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Видалити?')">Видалити</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p class="text-muted">Список порожній. Додайте завдання!</p>
-{% endif %}
+<div class="card shadow-sm border-0 mb-5">
+    <div class="card-body p-4">
+        <h4 class="mb-3">Додати нову модель</h4>
+
+        <form method="POST" action="{{ url_for('store') }}">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="name" class="form-label">Назва взуття</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Наприклад, Nike Air Max"
+                        required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="description" class="form-label">Опис</label>
+                    <input type="text" id="description" name="description" class="form-control"
+                        placeholder="Колір, матеріал, стиль" required>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="price" class="form-label">Ціна (€)</label>
+                    <input type="number" id="price" name="price" class="form-control" min="0.01" step="0.01"
+                        placeholder="79.99" required>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark w-100">
+                        Додати
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<h3 class="mb-3">Наш асортимент</h3>
+
+<div class="row g-4">
+    {% for shoe in shoes %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 shoe-card">
+            <div class="shoe-placeholder">
+                <span>👟</span>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ shoe.name }}</h5>
+                <p class="card-text text-muted">{{ shoe.description }}</p>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fs-4 fw-bold">{{ "%.2f"|format(shoe.price) }} €</span>
+
+                    <form method="POST" action="{{ url_for('delete', shoe_id=shoe.id) }}"
+                        onsubmit="return confirm('Видалити цей товар?')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            Видалити
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="text-center py-5 bg-white rounded shadow-sm">
+            <div class="display-3 mb-3">👟</div>
+            <h4>Каталог поки порожній</h4>
+            <p class="text-muted mb-0">
+                Додай першу модель взуття за допомогою форми вище.
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
